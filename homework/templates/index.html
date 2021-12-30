@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <!-- Required meta tags -->
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, shrink-to-fit=no"
+    />
+
+    <!-- Bootstrap CSS -->
+    <link
+      rel="stylesheet"
+      href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css"
+      integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm"
+      crossorigin="anonymous"
+    />
+
+    <!-- Optional JavaScript -->
+    <!-- jQuery first, then Popper.js, then Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script
+      src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"
+      integrity="sha384-ApNbgh9B+Y1QKtv3Rn7W3mgPxhU9K/ScQsAP7hUibX39j7fakFPskvXusvfa0b4Q"
+      crossorigin="anonymous"
+    ></script>
+    <script
+      src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"
+      integrity="sha384-JZR6Spejh4U02d8jOt6vLEHfe/JQGiRRSQQxSfFWpi1MquVdAyjUar5+76PVCmYl"
+      crossorigin="anonymous"
+    ></script>
+
+    <title>스파르타코딩클럽 | 원페이지</title>
+
+      <meta property="og:title" content="채윤의 사이트" />
+  <meta property="og:description" content="채윤의 첫 웹서비스" />
+  <meta property="og:image" content="{{ url_for('static', filename='ogimage.jpg') }}" />
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Jua&family=Poor+Story&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      * {
+        font-family: "Jua", sans-serif;
+        font-family: "Poor Story", cursive;
+      }
+      .whole {
+        width: 500px;
+        margin: auto;
+      }
+      .middle {
+        width: 500px;
+      }
+      h3 {
+        font-weight: bold;
+      }
+      .price_text {
+        font-weight: normal;
+        font-size: medium;
+      }
+      .mybtn {
+        width: 100px;
+        display: block;
+        margin: 0 auto;
+      }
+      .money {
+        color: blue;
+      }
+    </style>
+    <script>
+      $(document).ready(function () {
+            $.ajax({
+                type: "GET",
+                url: "https://api.manana.kr/exchange/rate.json",
+                data: {},
+                success: function (response) {
+                    let nowRate = response[1]['rate'];
+                    $('#rate-box').text(nowRate);
+                }
+            })
+            order_listing();
+        });
+
+        function order_listing() {
+            // 주문목록 보기 API 연결
+						$.ajax({
+                type: "GET",
+                url: "/order",
+                data: {},
+                success: function (response) {
+                  let orders = response['orders'];
+                  for (let i = 0; i < orders.length; i++) {
+                    let name = orders[i]['name'];
+                    let count = orders[i]['count'];
+                    let address = orders[i]['address'];
+                    let phone = orders[i]['phone'];
+
+                    let temp_html = `<tr><th scope="row">${name}</th>
+                                                <td>${count}</td>
+                                                <td>${address}</td>
+                                                <td>${phone}</td>
+                                            </tr>`
+                    $('#orders-box').append(temp_html)
+
+                  }
+
+                }
+            })
+        }
+
+
+        function order() {
+          let name = $('#order-name').val();
+            let count = $('#order-count').val();
+            let address = $('#order-address').val();
+            let phone = $('#order-phone').val();
+
+            // 주문하기 API 연결
+						$.ajax({
+                type: "POST",
+                url: "/order",
+                data: {name_give: name, count_give: count, address_give: address, phone_give: phone},
+                success: function (response) {
+                  if (response["result"] == "success"){
+                    alert(response["msg"]);
+                    window.location.reload()
+
+                  }
+
+                }
+            })
+        }
+    </script>
+  </head>
+
+  <body>
+    <div class="whole">
+      <div class="product_p">
+        <img
+          src="https://media.istockphoto.com/photos/wine-bottles-picture-id180732455?b=1&k=20&m=180732455&s=170667a&w=0&h=YyHgTC2X_Q508ESlxjHMeKZGlnmzai0mWgxazU5xsXs="
+        />
+      </div>
+      <div class="middle">
+        <h3>
+          산 페드로 와인 <span class="price_text"> 가격: 50,000원/병 </span>
+        </h3>
+        <p>
+          Lorem ipsum dolor sit amet, consectetur adipisicing elit.
+          Exercitationem laboriosam nulla officia porro provident quae quis
+          suscipit totam, vero. Aliquid, amet cumque dolores ducimus earum
+          eligendi fugiat impedit, ipsam iste itaque labore laboriosam maxime
+          minus non optio provident quaerat quas quibusdam quos recusandae rem
+          repellat, rerum soluta ullam vero voluptates.
+        </p>
+        <p class="money" id="money-rate"></p>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon1">주문자이름</span>
+          </div>
+          <input
+            type="text"
+            class="form-control"
+            id ="order-name"
+            aria-label="Username"
+            aria-describedby="basic-addon1"
+          />
+        </div>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="inputGroupSelect01">수량</span>
+          </div>
+          <select class="custom-select" id="order-count">
+            <option selected>-- 수량을 선택하세요 --</option>
+            <option value="1">1</option>
+            <option value="2">2</option>
+            <option value="3">3</option>
+          </select>
+        </div>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon2">주소</span>
+          </div>
+          <input
+            type="text"
+            id ="order-address"
+            class="form-control"
+            aria-label="Username"
+            aria-describedby="basic-addon1"
+          />
+        </div>
+        <div class="input-group mb-3">
+          <div class="input-group-prepend">
+            <span class="input-group-text" id="basic-addon3">전화번호</span>
+          </div>
+          <input
+            type="text"
+            id="order-phone"
+            class="form-control"
+            aria-label="Username"
+            aria-describedby="basic-addon1"
+          />
+        </div>
+      </div>
+
+      <div class="mybtn">
+        <button type="button" onclick="order()" class="btn btn-warning">
+          주문하기
+        </button>
+      </div>
+      <table class="table">
+        <thead>
+        <tr>
+            <th scope="col">이름</th>
+            <th scope="col">수량</th>
+            <th scope="col">주소</th>
+            <th scope="col">전화번호</th>
+        </tr>
+        </thead>
+        <tbody id="orders-box">
+        </tbody>
+    </table>
+
+    </div>
+  </body>
+</html>
